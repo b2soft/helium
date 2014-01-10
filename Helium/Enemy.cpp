@@ -3,21 +3,22 @@
 void FireEnemy(D3DXVECTOR2 pos, D3DXVECTOR2 speed);
 
 CEnemy::CEnemy(void)
-: CLiveObject(D3DXVECTOR2((rand() % 700) - 400.0f, -400.0f)/*старт. поз.*/, 50/*нач. жизни*/)
+: CLiveObject(D3DXVECTOR2((rand() % 700) - 350.0f, -400.0f)/*старт. поз.*/, 50/*нач. жизни*/)
+, m_Sprite(L"Data/enemy-01.png", 0, 0, 64, 64, 32, 32),
+fFireTimeOut(0)
 {
-	m_pTex = CGraphics::get().LoadTexture(L"Data/enemy-01.png");
+
 }
 
 CEnemy::~CEnemy(void)
 {
-
+	//delete m_Sprite;
 }
 
 void CEnemy::Draw()
 {
 	D3DXVECTOR2 pos = GetPos();
-	CGraphics::get().SetTexture(0, m_pTex);
-	CGraphics::get().DrawSprite(m_pTex, pos - D3DXVECTOR2(32, 32), D3DXVECTOR2(64, 64));
+	m_Sprite.Draw(pos);
 }
 
 void CEnemy::Update(float fDeltaTime)

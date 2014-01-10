@@ -2,9 +2,9 @@
 
 
 CPlayerShip::CPlayerShip()
-: CLiveObject(D3DXVECTOR2(0, 200)/*старт. поз.*/, 100/*нач. жизни*/)
+: CLiveObject(D3DXVECTOR2(0, 200)/*старт. поз.*/, 100/*нач. жизни*/),
+m_Sprite(L"Data/ship-02.png", 0, 0, 64, 64, 32, 32)
 {
-	m_pTex = CGraphics::get().LoadTexture(L"Data/ship-02.png");
 }
 
 CPlayerShip::~CPlayerShip(void)
@@ -15,10 +15,8 @@ void CPlayerShip::Draw()
 {
 	// рисуем спрайт
 	D3DXVECTOR2 pos = GetPos();
-	CGraphics::get().SetTexture(0, m_pTex);
-	CGraphics::get().DrawSprite(m_pTex, pos - D3DXVECTOR2(32, 32)/*центрируем спрайт*/,
-		D3DXVECTOR2(64, 64));
-
+	//pos -= D3DXVECTOR2(32, 32);
+	m_Sprite.Draw(pos);
 }
 
 void CPlayerShip::Scroll(float dx, float dy)

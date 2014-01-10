@@ -2,10 +2,9 @@
 
 #include "Head.h"
 
-
 class CEnemy :public CLiveObject
 {
-	PCTexture m_pTex;
+	CSprite m_Sprite;
 
 	float fFireTimeOut;//timeout for firing
 

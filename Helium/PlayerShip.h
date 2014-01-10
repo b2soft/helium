@@ -4,7 +4,8 @@
 
 class CPlayerShip : public CLiveObject
 {
-	PCTexture m_pTex;
+//	PCTexture m_pTex;
+	CSprite	m_Sprite;
 	
 public:
 	CPlayerShip(void);
