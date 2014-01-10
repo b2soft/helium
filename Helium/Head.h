@@ -24,10 +24,9 @@ using namespace std;
 #include "Utils.h"
 
 #include "Singleton.h"
-#include "Shader.h"
 #include "Texture.h"
+#include "Shader.h"
 #include "Graphics.h"
-
 
 #include "LiveObject.h"
 #include "PlayerShip.h"

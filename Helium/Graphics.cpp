@@ -1,6 +1,5 @@
 #include "Head.h"
 
-
 CGraphics::CGraphics(void)
 {
 	m_pD3D = NULL;
