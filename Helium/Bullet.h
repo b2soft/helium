@@ -21,4 +21,3 @@ public:
 	bool TestCollision(const CLiveObject& obj) const;
 };
 
-//test
