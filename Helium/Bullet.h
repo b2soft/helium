@@ -20,3 +20,5 @@ public:
 	void Update(float fDeltaTime);
 	bool TestCollision(const CLiveObject& obj) const;
 };
+
+//test
