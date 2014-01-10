@@ -2,9 +2,10 @@
 
 
 CBullet::CBullet(D3DXVECTOR2 pos, D3DXVECTOR2 speed, const std::wstring& strTexFile)
-: m_pos(pos), m_speed(speed), m_iDamage(30)
+: m_pos(pos), m_speed(speed), m_iDamage(30),
+m_Sprite(strTexFile, 0, 0, 16, 32, 8, 16)
 {
-	m_pTex = CGraphics::get().LoadTexture(strTexFile);
+	//m_pTex = CGraphics::get().LoadTexture(strTexFile);
 }
 
 CBullet::~CBullet(void)
@@ -40,6 +41,7 @@ int CBullet::GetDamage() const
 void CBullet::Draw() const
 {
 	D3DXVECTOR2 pos = GetPos();
-	CGraphics::get().SetTexture(0, m_pTex);
-	CGraphics::get().DrawSprite(m_pTex, pos - D3DXVECTOR2(8, 8), D3DXVECTOR2(16, 32));
+	//CGraphics::get().SetTexture(0, m_pTex);
+	//CGraphics::get().DrawSprite(m_pTex, pos - D3DXVECTOR2(8, 8), D3DXVECTOR2(16, 32));
+	m_Sprite.Draw(pos);
 }

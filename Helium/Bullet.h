@@ -9,7 +9,8 @@ class CBullet
 	D3DXVECTOR2 m_pos;
 	D3DXVECTOR2 m_speed;
 
-	PCTexture m_pTex;
+	//PCTexture m_pTex;
+	CSprite	m_Sprite;
 
 public:
 	CBullet(D3DXVECTOR2 pos = D3DXVECTOR2(0, 0), D3DXVECTOR2 speed = D3DXVECTOR2(0, 0), const std::wstring& strTexFile = L"Data/bullet.dds");

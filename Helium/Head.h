@@ -13,6 +13,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <functional>
 #include <d3d9.h>
 #include <d3dx9.h>
 
@@ -27,6 +29,8 @@ using namespace std;
 #include "Shader.h"
 #include "Texture.h"
 #include "Sprite.h"
+#include "SpriteA.h"
+#include "Explosion.h"
 #include "Graphics.h"
 
 

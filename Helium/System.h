@@ -17,7 +17,7 @@ private:
 	static HWND MakeWindow(HINSTANCE hInstance);
 	static LRESULT CALLBACK wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static int MainLoop();
-	static void Update();
+	static void Update(const float fDeltaTime);
 	static void DrawSetup();
 	static void Draw();
 public:

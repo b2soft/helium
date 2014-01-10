@@ -5,6 +5,7 @@ CStarField*				g_pStarField;
 std::vector<CEnemy>		g_vEnemies;
 std::vector<CBullet>	g_vPlayerBullets;
 std::vector<CBullet>	g_vEnemyBullets;
+std::vector<CExplosion*>	g_vExplosions;
 int level = 0;
 
 PCShader m_pPixelShader, m_pVertexShader;
@@ -12,7 +13,7 @@ HWND m_hWindow;
 
 void FireEnemy(D3DXVECTOR2 pos, D3DXVECTOR2 speed)
 {
-	g_vEnemyBullets.push_back(CBullet(pos, speed, L"Data/bullet-enemy.dds"));
+	g_vEnemyBullets.push_back(CBullet(pos+D3DXVECTOR2(0, 25), speed, L"Data/bullet-enemy.dds"));
 }
 
 void ProcessUserInput(float fDeltaTime)
@@ -130,31 +131,34 @@ int CSystem::MainLoop()
 		}
 		else
 		{
-			Update();
+			Update(.02f);
 			DrawSetup();
 		}
 	}
 	return 1;
 }
 
-void CSystem::Update()
+void CSystem::Update(const float fDeltaTime)
 {
-	ProcessUserInput(.02f);
+	ProcessUserInput(fDeltaTime);
+
 
 	if ((rand() & (127 - level)) == (127 - level))
 		g_vEnemies.push_back(CEnemy());
 
-	g_pStarField->Update(.02f);
+	g_pStarField->Update(fDeltaTime);
 
-	for (size_t i = 0; i <g_vEnemies.size(); i++)
-		g_vEnemies[i].Update(.02f);
+	for_each(g_vEnemies.begin(), g_vEnemies.end(),
+		bind2nd(mem_fun_ref(&CEnemy::Update), fDeltaTime));
 
-	for (size_t i = 0; i < g_vPlayerBullets.size(); i++)
-		g_vPlayerBullets[i].Update(.02f);
+	for_each(g_vPlayerBullets.begin(), g_vPlayerBullets.end(),
+		bind2nd(mem_fun_ref(&CBullet::Update), fDeltaTime));
 
-	for (size_t i = 0; i < g_vEnemyBullets.size(); i++)
-		g_vEnemyBullets[i].Update(.02f);
+	for_each(g_vEnemyBullets.begin(), g_vEnemyBullets.end(),
+		bind2nd(mem_fun_ref(&CBullet::Update), fDeltaTime));
 
+	for_each(g_vExplosions.begin(), g_vExplosions.end(),
+		bind2nd(mem_fun(&CExplosion::Update), fDeltaTime));
 
 	for (size_t i = 0; i < g_vEnemyBullets.size(); i++)
 	{
@@ -180,16 +184,25 @@ void CSystem::Update()
 				g_vPlayerBullets.pop_back();
 			}
 
-			//out of screen
+			if (!g_vEnemies[i].IsAlive())
+				g_vExplosions.push_back(new CExplosion(g_vEnemies[i].GetPos()));
+
+
+
+				//out of screen
 		if (g_vEnemies[i].GetPos().y>400)
 			g_vEnemies[i].DoDamage(100000);
 
+		if (g_vEnemies.size())
+			g_vEnemies.erase(remove_if(g_vEnemies.begin(), g_vEnemies.end(),
+			not1(mem_fun_ref(&CEnemy::IsAlive))), g_vEnemies.end());
 
-		//is enemy alive?
-		if (!g_vEnemies[i].IsAlive())
+		for (size_t i = 0; i < g_vExplosions.size(); i++)
+		if (g_vExplosions[i]->IsFinished())
 		{
-			g_vEnemies[i] = *g_vEnemies.rbegin();
-			g_vEnemies.pop_back();
+			delete g_vExplosions[i];
+			g_vExplosions[i] = *g_vExplosions.rbegin();
+			g_vExplosions.pop_back();
 		}
 
 	}
@@ -202,14 +215,17 @@ void CSystem::Draw()
 	g_pStarField->Draw();
 	g_pPlayer->Draw();
 
-	for (size_t i = 0; i < g_vEnemies.size(); i++)
-		g_vEnemies[i].Draw();
+	for_each(g_vEnemies.begin(), g_vEnemies.end(),
+		mem_fun_ref(&CEnemy::Draw));
 
-	for (size_t i = 0; i < g_vPlayerBullets.size(); i++)
-		g_vPlayerBullets[i].Draw();
+	for_each(g_vPlayerBullets.begin(), g_vPlayerBullets.end(),
+		mem_fun_ref(&CBullet::Draw));
 
-	for (size_t i = 0; i < g_vEnemyBullets.size(); i++)
-		g_vEnemyBullets[i].Draw();
+	for_each(g_vEnemyBullets.begin(), g_vEnemyBullets.end(),
+		mem_fun_ref(&CBullet::Draw));
+
+	for_each(g_vExplosions.begin(), g_vExplosions.end(),
+		mem_fun(&CExplosion::Draw));
 }
 
 void CSystem::DrawSetup()
