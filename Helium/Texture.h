@@ -28,8 +28,8 @@ protected:
 
 public:
 	std::wstring GetSrc() const;
-	UINT Width() const;
-	UINT Height() const;
+	UINT GetWidth() const;
+	UINT GetHeight() const;
 };
 
 typedef CTexture* PCTexture; //pointer type to a CTexture
