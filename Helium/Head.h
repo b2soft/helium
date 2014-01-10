@@ -26,6 +26,7 @@ using namespace std;
 #include "Singleton.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Sprite.h"
 #include "Graphics.h"
 
 

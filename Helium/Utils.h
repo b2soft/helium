@@ -46,7 +46,6 @@ struct CRect
 	CRect(CPoint ptmin, CPoint ptMax);
 };
 
-
 struct VertPosDiffuse
 {
 	D3DXVECTOR3 m_pos;
@@ -60,6 +59,7 @@ struct VertPosTc
 {
 	D3DXVECTOR3 m_pos;
 	D3DXVECTOR2 m_tc;
+	VertPosTc() {}
 	VertPosTc(D3DXVECTOR3 pos, D3DXVECTOR2 tc)
 		: m_pos(pos), m_tc(tc)
 	{}

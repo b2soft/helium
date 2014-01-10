@@ -4,7 +4,7 @@
 CTexture::CTexture(void)
 : m_pTex(NULL)
 {
-
+	ZeroMemory(&m_ddesc, sizeof(D3DSURFACE_DESC));
 }
 
 CTexture::~CTexture(void)
@@ -16,6 +16,10 @@ void CTexture::SetTexture(LPDIRECT3DTEXTURE9 pTex)
 {
 	Release();
 	m_pTex = pTex;
+	if (m_pTex)
+	{
+		m_pTex->GetLevelDesc(0, &m_ddesc);
+	}
 }
 
 void CTexture::SetSrc(const std::wstring& src)
@@ -45,4 +49,14 @@ HRESULT CTexture::Release()
 HRESULT CTexture::Reload(LPDIRECT3DDEVICE9 pDevice)
 {
 	return D3DXCreateTextureFromFile(pDevice, GetSrc().c_str(), &m_pTex);
+}
+
+UINT CTexture::GetWidth() const
+{
+	return m_ddesc.Width;
+}
+
+UINT CTexture::GetHeight() const
+{
+	return m_ddesc.Height;
 }

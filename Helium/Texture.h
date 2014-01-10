@@ -12,6 +12,9 @@ private:
 	std::wstring m_strTexSrc;	//File with a texture
 	LPDIRECT3DTEXTURE9 m_pTex;	//texture variable
 
+	D3DSURFACE_DESC m_ddesc;
+
+
 protected:
 	CTexture(void);
 	~CTexture(void);
@@ -24,6 +27,8 @@ protected:
 
 public:
 	std::wstring GetSrc() const;
+	UINT GetWidth() const;
+	UINT GetHeight() const;
 };
 
 typedef CTexture* PCTexture; //pointer type to a CTexture
