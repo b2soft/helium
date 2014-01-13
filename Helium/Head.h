@@ -8,6 +8,7 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files:
 #include <windows.h>
+#include <mmsystem.h>
 
 #include <iostream>
 #include <fstream>
@@ -18,14 +19,17 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
+
 #pragma comment (lib, "d3d9.lib")
-#pragma comment (lib, "d3dx9.lib")
-//#pragma comment (lib, "d3dx9d.lib")
+//#pragma comment (lib, "d3dx9.lib")
+#pragma comment (lib, "d3dx9d.lib")
+#pragma comment (lib, "winmm.lib")
 
 using namespace std;
 
 #include "Utils.h"
 
+#include "Clock.h"
 #include "Singleton.h"
 #include "Shader.h"
 #include "Texture.h"

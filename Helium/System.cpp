@@ -7,6 +7,8 @@ std::vector<CBullet>	g_vPlayerBullets;
 std::vector<CBullet>	g_vEnemyBullets;
 std::vector<CExplosion*>	g_vExplosions;
 CText*					g_pTest;
+CClock*					g_pClock;
+
 int level = 0;
 long double g_iPoints = 0;
 
@@ -106,6 +108,7 @@ bool CSystem::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
 	g_pStarField = new CStarField();
 	g_pTest = new CText(D3DXVECTOR2(10.0f, 10.0f), "Text", 30, D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
 
+
 	return TRUE;
 }
 
@@ -115,6 +118,9 @@ void CSystem::Initialize(HINSTANCE hInstance)
 
 	InitD3D(m_hWindow, WINDOW_WIDTH, WINDOW_HEIGHT);
 	
+	g_pClock = new CClock();
+	g_pClock->Initialize();
+
 	MainLoop();
 	
 }
@@ -123,19 +129,21 @@ int CSystem::MainLoop()
 {
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
+	float dt;
 	while (msg.message != WM_QUIT)
 	{
+		g_pClock->Update();
+		Update(g_pClock->DT());
+		DrawSetup();
+
 		if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		else
-		{
-			Update(.02f);
-			DrawSetup();
-		}
 	}
+	Release();
+
 	return 1;
 }
 
@@ -208,7 +216,7 @@ void CSystem::Update(const float fDeltaTime)
 		}
 
 	}
-	string score = "Score: ";
+ 	string score = "Score: ";
 	score += to_string(g_iPoints);
 	g_pTest->Update(score);
 	
@@ -283,4 +291,15 @@ void CSystem::DrawSetup()
 	}
 	else
 		gr.Reset();
+}
+
+void CSystem::Release()
+{
+	delete g_pTest;
+	delete g_pStarField;
+	delete g_pPlayer;
+	g_vExplosions.clear();
+	g_vEnemyBullets.clear();
+	g_vPlayerBullets.clear();
+	g_vEnemies.clear();
 }

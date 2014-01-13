@@ -20,6 +20,7 @@ private:
 	static void Update(const float fDeltaTime);
 	static void DrawSetup();
 	static void Draw();
+	static void Release();
 public:
 	static void Initialize(HINSTANCE hInstance);
 	
