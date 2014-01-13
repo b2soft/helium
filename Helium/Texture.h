@@ -16,9 +16,6 @@ private:
 
 
 protected:
-	CTexture(void);
-	~CTexture(void);
-
 	HRESULT Release();
 	HRESULT Reload(LPDIRECT3DDEVICE9 pDevice);
 	void SetTexture(LPDIRECT3DTEXTURE9 pTex);
@@ -26,6 +23,8 @@ protected:
 	LPDIRECT3DTEXTURE9 GetTexture() const;
 
 public:
+	CTexture(void);
+	~CTexture(void);
 	std::wstring GetSrc() const;
 	UINT GetWidth() const;
 	UINT GetHeight() const;

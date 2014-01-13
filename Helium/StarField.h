@@ -5,7 +5,7 @@
 class CStarField
 {
 	PCTexture m_pTex;
-
+	
 	float m_fDT;
 
 	struct Star //one star

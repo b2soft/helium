@@ -4,9 +4,7 @@
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
-#define SHIP_SPEED 200
-
-
+#define SHIP_SPEED 350
 
 
 class CSystem

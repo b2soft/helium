@@ -9,7 +9,7 @@ std::vector<CExplosion*>	g_vExplosions;
 CText*					g_pTest;
 CClock*					g_pClock;
 
-int level = 0;
+int level = 5;
 long double g_iPoints = 0;
 
 PCShader m_pPixelShader, m_pVertexShader;
@@ -28,11 +28,11 @@ void ProcessUserInput(float fDeltaTime)
 	if (GetAsyncKeyState(VK_RIGHT) & 32768)
 		dx++; // движемся вправо
 
-	if (GetAsyncKeyState(VK_UP) & 32768)
-	{
-		if (level <= 50)
-			level++;
-	}
+// 	if (GetAsyncKeyState(VK_UP) & 32768)
+// 	{
+// 		if (level <= 50)
+// 			level++;
+// 	}
 
 
 	g_pPlayer->Scroll(dx*SHIP_SPEED*fDeltaTime, 0);
