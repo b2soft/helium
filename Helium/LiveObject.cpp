@@ -58,3 +58,8 @@ float CLiveObject::GetRadius() const
 	return m_fRadius;
 }
 
+int CLiveObject::GetHealth() const
+{
+	return m_iHealth;
+}
+

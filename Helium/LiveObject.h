@@ -22,5 +22,6 @@ public:
 	bool IsAlive() const;
 	D3DXVECTOR2 GetPos() const;
 	float GetRadius() const;
+	int GetHealth() const;
 	bool TestCollision(const CLiveObject& obj) const;
 };

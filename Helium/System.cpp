@@ -6,7 +6,9 @@ std::vector<CEnemy>		g_vEnemies;
 std::vector<CBullet>	g_vPlayerBullets;
 std::vector<CBullet>	g_vEnemyBullets;
 std::vector<CExplosion*>	g_vExplosions;
+CText*					g_pTest;
 int level = 0;
+long double g_iPoints = 0;
 
 PCShader m_pPixelShader, m_pVertexShader;
 HWND m_hWindow;
@@ -45,8 +47,6 @@ void ProcessUserInput(float fDeltaTime)
 	if (GetAsyncKeyState(0x51))
 		PostQuitMessage(0);
 }
-
-
 
 HWND CSystem::MakeWindow(HINSTANCE hInstance)
 {
@@ -104,6 +104,7 @@ bool CSystem::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
 
 	g_pPlayer = new CPlayerShip();
 	g_pStarField = new CStarField();
+	g_pTest = new CText(D3DXVECTOR2(10.0f, 10.0f), "Text", 30, D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
 
 	return TRUE;
 }
@@ -142,7 +143,6 @@ void CSystem::Update(const float fDeltaTime)
 {
 	ProcessUserInput(fDeltaTime);
 
-
 	if ((rand() & (127 - level)) == (127 - level))
 		g_vEnemies.push_back(CEnemy());
 
@@ -170,7 +170,6 @@ void CSystem::Update(const float fDeltaTime)
 		}
 	}
 
-
 	for (size_t i = 0; i < g_vEnemies.size(); i++)
 	{
 		if (g_vEnemies[i].TestCollision(*g_pPlayer))	//collision with player ship
@@ -185,7 +184,10 @@ void CSystem::Update(const float fDeltaTime)
 			}
 
 			if (!g_vEnemies[i].IsAlive())
+			{
 				g_vExplosions.push_back(new CExplosion(g_vEnemies[i].GetPos()));
+				g_iPoints++;
+			}
 
 
 
@@ -206,7 +208,9 @@ void CSystem::Update(const float fDeltaTime)
 		}
 
 	}
-
+	string score = "Score: ";
+	score += to_string(g_iPoints);
+	g_pTest->Update(score);
 	
 }
 
@@ -226,6 +230,8 @@ void CSystem::Draw()
 
 	for_each(g_vExplosions.begin(), g_vExplosions.end(),
 		mem_fun(&CExplosion::Draw));
+
+	g_pTest->Draw();
 }
 
 void CSystem::DrawSetup()
