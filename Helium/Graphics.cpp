@@ -10,7 +10,7 @@ CGraphics::CGraphics(void)
 
 CGraphics::~CGraphics(void)
 {
-
+	CleanUp();
 }
 
 bool CGraphics::Init(HWND hRenderWnd, int width, int height)
@@ -41,7 +41,9 @@ void CGraphics::CleanUp()
 	while (itr != m_vecTextures.end())
 	{
 		(*itr)->Release();
+		delete (*itr);
 		itr++;
+		
 	}
 	m_vecTextures.clear();
 
@@ -49,6 +51,7 @@ void CGraphics::CleanUp()
 	while (itr2 != m_vecShaders.end())
 	{
 		(*itr2)->Release();
+		delete (*itr2);
 		itr2++;
 	}
 	m_vecShaders.clear();
@@ -109,7 +112,7 @@ LPDIRECT3DDEVICE9 CGraphics::GetDevice()
 	return m_pD3DDevice;
 }
 
-PCTexture CGraphics::LoadTexture(const std::wstring& strFileName)
+PCTexture CGraphics::LoadTexture(const std::wstring& strFileName)//!!!!
 {
 	vecTextures::iterator itr = m_vecTextures.begin();
 	while (itr != m_vecTextures.end())
@@ -124,7 +127,7 @@ PCTexture CGraphics::LoadTexture(const std::wstring& strFileName)
 	if (FAILED(D3DXCreateTextureFromFile(m_pD3DDevice, strFileName.c_str(), &pTex)))
 		return NULL;
 
-	PCTexture pTextPtr = new CTexture();
+	CTexture *pTextPtr = new CTexture();
 	pTextPtr->SetSrc(strFileName);
 	pTextPtr->SetTexture(pTex);
 

@@ -9,7 +9,6 @@ CStarField::CStarField(void)
 
 CStarField::~CStarField(void)
 {
-	delete m_pTex;
 	m_vecStars.clear();
 }
 

@@ -21,8 +21,13 @@
 
 
 #pragma comment (lib, "d3d9.lib")
-//#pragma comment (lib, "d3dx9.lib")
+
+#ifdef _DEBUG
 #pragma comment (lib, "d3dx9d.lib")
+#else
+#pragma comment (lib, "d3dx9.lib")
+#endif
+
 #pragma comment (lib, "winmm.lib")
 
 using namespace std;
@@ -47,3 +52,7 @@ using namespace std;
 #include "Bullet.h"
 #include "Text.h"
 #include "System.h"
+
+#ifdef _DEBUG
+#define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif

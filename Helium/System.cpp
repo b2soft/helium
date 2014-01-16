@@ -120,9 +120,8 @@ void CSystem::Initialize(HINSTANCE hInstance)
 	
 	g_pClock = new CClock();
 	g_pClock->Initialize();
-
-	MainLoop();
 	
+	MainLoop();
 }
 
 int CSystem::MainLoop()
@@ -149,7 +148,9 @@ int CSystem::MainLoop()
 
 void CSystem::Update(const float fDeltaTime)
 {
-	ProcessUserInput(fDeltaTime);
+	
+	if (GetForegroundWindow()==m_hWindow)
+		ProcessUserInput(fDeltaTime);
 
 	if ((rand() & (127 - level)) == (127 - level))
 		g_vEnemies.push_back(CEnemy());
@@ -193,7 +194,8 @@ void CSystem::Update(const float fDeltaTime)
 
 			if (!g_vEnemies[i].IsAlive())
 			{
-				g_vExplosions.push_back(new CExplosion(g_vEnemies[i].GetPos()));
+				CExplosion *pExplosion = new CExplosion(g_vEnemies[i].GetPos());
+					g_vExplosions.push_back(pExplosion);
 				g_iPoints++;
 			}
 
@@ -298,7 +300,12 @@ void CSystem::Release()
 	delete g_pTest;
 	delete g_pStarField;
 	delete g_pPlayer;
+	delete g_pClock;
+	
+	for (size_t i = 0; i < g_vExplosions.size(); i++)
+		delete g_vExplosions[i];
 	g_vExplosions.clear();
+
 	g_vEnemyBullets.clear();
 	g_vPlayerBullets.clear();
 	g_vEnemies.clear();
