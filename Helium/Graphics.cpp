@@ -215,10 +215,10 @@ HRESULT CGraphics::Reset()
 HRESULT CGraphics::DrawSprite(PCTexture pTex, D3DXVECTOR2 pos, D3DXVECTOR2 size)
 {
 	SetTexture(0, pTex);
-	float x0 = pos.x + .5;
-	float y0 = pos.y + .5;
-	float x1 = pos.x + size.x + .5;
-	float y1 = pos.y + size.y + .5;
+	float x0 = pos.x + .5f;
+	float y0 = pos.y + .5f;
+	float x1 = pos.x + size.x + .5f;
+	float y1 = pos.y + size.y + .5f;
 
 	VertPosTc v[] =
 	{

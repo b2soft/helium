@@ -128,7 +128,6 @@ int CSystem::MainLoop()
 {
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
-	float dt;
 	while (msg.message != WM_QUIT)
 	{
 		g_pClock->Update();

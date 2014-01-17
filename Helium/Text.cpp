@@ -6,7 +6,6 @@ CText::CText()
 
 CText::CText(D3DXVECTOR2 pos, string text, int size, D3DXCOLOR color)
 {
-	HRESULT hr;
 	D3DXFONT_DESCA lf;
 
 	m_iSize = size;

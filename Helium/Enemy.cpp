@@ -10,6 +10,8 @@ fFireTimeOut(0)
 
 }
 
+
+
 CEnemy::~CEnemy(void)
 {
 	//delete m_Sprite;
