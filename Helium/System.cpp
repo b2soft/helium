@@ -108,7 +108,6 @@ bool CSystem::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
 	g_pStarField = new CStarField();
 	g_pTest = new CText(D3DXVECTOR2(10.0f, 10.0f), "Text", 30, D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
 
-
 	return TRUE;
 }
 
