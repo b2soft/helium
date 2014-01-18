@@ -100,9 +100,9 @@ bool CSystem::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
 	if (!CGraphics::get().Init(hWnd, iWindowWidth, iWindowHeight))
 		return FALSE;
 	// загружаем вертексный шейдер
-	m_pVertexShader = CGraphics::get().LoadShader("vs.hlsl", "main", "vs_3_0");
+	m_pVertexShader = CGraphics::get().LoadShader("Data/vs.hlsl", "main", "vs_3_0");
 	// загружаем пиксельный шейдер
-	m_pPixelShader = CGraphics::get().LoadShader("ps.hlsl", "pixel_shader_main", "ps_3_0");
+	m_pPixelShader = CGraphics::get().LoadShader("Data/ps.hlsl", "pixel_shader_main", "ps_3_0");
 
 	g_pPlayer = new CPlayerShip();
 	g_pStarField = new CStarField();
