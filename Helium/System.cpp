@@ -6,11 +6,14 @@ std::vector<CEnemy>		g_vEnemies;
 std::vector<CBullet>	g_vPlayerBullets;
 std::vector<CBullet>	g_vEnemyBullets;
 std::vector<CExplosion*>	g_vExplosions;
-CText*					g_pTest;
 CClock*					g_pClock;
+CFsm*					g_pFsm;
+
+ofstream    of("memory.txt");
 
 int level = 5;
 long double g_iPoints = 0;
+int itrt = 0;
 
 PCShader m_pPixelShader, m_pVertexShader;
 HWND m_hWindow;
@@ -22,30 +25,43 @@ void FireEnemy(D3DXVECTOR2 pos, D3DXVECTOR2 speed)
 
 void ProcessUserInput(float fDeltaTime)
 {
-	int dx = 0;
-	if (GetAsyncKeyState(VK_LEFT) & 32768)
-		dx--; // движемся влево
-	if (GetAsyncKeyState(VK_RIGHT) & 32768)
-		dx++; // движемся вправо
+	STATE t_state = g_pFsm->GetState();
 
-// 	if (GetAsyncKeyState(VK_UP) & 32768)
-// 	{
-// 		if (level <= 50)
-// 			level++;
-// 	}
-
-
-	g_pPlayer->Scroll(dx*SHIP_SPEED*fDeltaTime, 0);
-
-	static float fFireTimeOut = .0f;
-	fFireTimeOut -= fDeltaTime;
-
-	if (GetAsyncKeyState(VK_SPACE) & 32768 && fFireTimeOut <= 0) //shoot
+	switch (t_state)
 	{
-		fFireTimeOut = .3f;
-		CBullet bullet(g_pPlayer->GetPos() - D3DXVECTOR2(0, 30), D3DXVECTOR2(0, -300));
-		g_vPlayerBullets.push_back(bullet);
+	case MENU:
+		break;
+
+	case PLAY:
+	{
+		int dx = 0;
+		if (GetAsyncKeyState(VK_LEFT) & 32768) dx--; // движемся влево
+		if (GetAsyncKeyState(VK_RIGHT) & 32768) dx++; // движемся вправо
+
+		g_pPlayer->Scroll(dx*SHIP_SPEED*fDeltaTime, 0);
+		static float fFireTimeOut = .0f;
+		fFireTimeOut -= fDeltaTime;
+		
+		if (GetAsyncKeyState(VK_SPACE) & 32768 && fFireTimeOut <= 0) //shoot
+		{
+			fFireTimeOut = .3f;
+			CBullet bullet(g_pPlayer->GetPos() - D3DXVECTOR2(0, 30), D3DXVECTOR2(0, -300));
+			g_vPlayerBullets.push_back(bullet);
+		}
+		break;			
 	}
+
+	case GAMEOVER:
+		break;
+
+	case PAUSE:
+		
+		break;
+	default:
+		break;
+	}
+	
+
 	if (GetAsyncKeyState(0x51))
 		PostQuitMessage(0);
 }
@@ -106,7 +122,6 @@ bool CSystem::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
 
 	g_pPlayer = new CPlayerShip();
 	g_pStarField = new CStarField();
-	g_pTest = new CText(D3DXVECTOR2(10.0f, 10.0f), "Text", 30, D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
 
 	return TRUE;
 }
@@ -119,6 +134,7 @@ void CSystem::Initialize(HINSTANCE hInstance)
 	
 	g_pClock = new CClock();
 	g_pClock->Initialize();
+	g_pFsm = new CFsm();
 	
 	MainLoop();
 }
@@ -126,13 +142,14 @@ void CSystem::Initialize(HINSTANCE hInstance)
 int CSystem::MainLoop()
 {
 	MSG msg;
+	itrt = 0;
 	ZeroMemory(&msg, sizeof(msg));
 	while (msg.message != WM_QUIT)
 	{
 		g_pClock->Update();
 		Update(g_pClock->DT());
 		DrawSetup();
-
+		
 		if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
@@ -146,100 +163,145 @@ int CSystem::MainLoop()
 
 void CSystem::Update(const float fDeltaTime)
 {
-	
-	if (GetForegroundWindow()==m_hWindow)
+	itrt++;
+	if (GetForegroundWindow() == m_hWindow)
 		ProcessUserInput(fDeltaTime);
 
-	if ((rand() & (127 - level)) == (127 - level))
-		g_vEnemies.push_back(CEnemy());
-
-	g_pStarField->Update(fDeltaTime);
-
-	for_each(g_vEnemies.begin(), g_vEnemies.end(),
-		bind2nd(mem_fun_ref(&CEnemy::Update), fDeltaTime));
-
-	for_each(g_vPlayerBullets.begin(), g_vPlayerBullets.end(),
-		bind2nd(mem_fun_ref(&CBullet::Update), fDeltaTime));
-
-	for_each(g_vEnemyBullets.begin(), g_vEnemyBullets.end(),
-		bind2nd(mem_fun_ref(&CBullet::Update), fDeltaTime));
-
-	for_each(g_vExplosions.begin(), g_vExplosions.end(),
-		bind2nd(mem_fun(&CExplosion::Update), fDeltaTime));
-
-	for (size_t i = 0; i < g_vEnemyBullets.size(); i++)
+	if (g_pFsm->GetState() == PLAY)
 	{
-		if (g_vEnemyBullets[i].TestCollision(*g_pPlayer))
+		if (level != 0)
 		{
-			g_pPlayer->DoDamage(g_vEnemyBullets[i].GetDamage());
-			g_vEnemyBullets[i] = *g_vEnemyBullets.rbegin();
-			g_vEnemyBullets.pop_back();
+			if ((rand() & (127 - level)) == (127 - level))
+				g_vEnemies.push_back(CEnemy());
 		}
-	}
+		if (level!=0)
+			g_pStarField->Update(fDeltaTime);
 
-	for (size_t i = 0; i < g_vEnemies.size(); i++)
-	{
-		if (g_vEnemies[i].TestCollision(*g_pPlayer))	//collision with player ship
-			g_vEnemies[i].DoDamage(100);
+		for_each(g_vExplosions.begin(), g_vExplosions.end(),
+			bind2nd(mem_fun(&CExplosion::Update), fDeltaTime));
+		
+		for_each(g_vEnemies.begin(), g_vEnemies.end(),
+			bind2nd(mem_fun_ref(&CEnemy::Update), fDeltaTime));
 
-		for (size_t j = 0; j < g_vPlayerBullets.size(); j++)	//collision with player bullets
-			if (g_vPlayerBullets[j].TestCollision(g_vEnemies[i]))
+		for_each(g_vPlayerBullets.begin(), g_vPlayerBullets.end(),
+			bind2nd(mem_fun_ref(&CBullet::Update), fDeltaTime));
+
+		for_each(g_vEnemyBullets.begin(), g_vEnemyBullets.end(),
+			bind2nd(mem_fun_ref(&CBullet::Update), fDeltaTime));
+
+		
+
+		for (size_t i = 0; i < g_vEnemyBullets.size(); i++)
+		{
+			if (g_vEnemyBullets[i].TestCollision(*g_pPlayer))
 			{
-				g_vEnemies[i].DoDamage(g_vPlayerBullets[j].GetDamage());
-				g_vPlayerBullets[j] = *g_vPlayerBullets.rbegin();
+				g_pPlayer->DoDamage(g_vEnemyBullets[i].GetDamage());
+				g_vEnemyBullets[i] = *g_vEnemyBullets.rbegin();
+				g_vEnemyBullets.pop_back();
+			}
+			if (g_vEnemyBullets[i].GetPos().y>350)
+			{
+				g_vEnemyBullets[i] = *g_vEnemyBullets.rbegin();
+				g_vEnemyBullets.pop_back();
+			}
+		}
+		
+
+		for (size_t i = 0; i < g_vPlayerBullets.size(); i++)
+		{
+			if (g_vPlayerBullets[i].GetPos().y<-350)
+			{
+				g_vPlayerBullets[i] = *g_vPlayerBullets.rbegin();
 				g_vPlayerBullets.pop_back();
+			}
+		}
+
+		for (size_t i = 0; i < g_vEnemies.size(); i++)
+		{
+			if (g_vEnemies[i].TestCollision(*g_pPlayer))	//collision with player ship
+				g_vEnemies[i].DoDamage(100);
+
+			for (size_t j = 0; j < g_vPlayerBullets.size(); j++)	//collision with player bullets
+			{	
+				if (g_vPlayerBullets[j].TestCollision(g_vEnemies[i]))
+				{
+					g_vEnemies[i].DoDamage(g_vPlayerBullets[j].GetDamage());
+					g_vPlayerBullets[j] = *g_vPlayerBullets.rbegin();
+					g_vPlayerBullets.pop_back();
+				}
 			}
 
 			if (!g_vEnemies[i].IsAlive())
 			{
 				CExplosion *pExplosion = new CExplosion(g_vEnemies[i].GetPos());
-					g_vExplosions.push_back(pExplosion);
+				g_vExplosions.push_back(pExplosion);
 				g_iPoints++;
 			}
+			//out of screen
+			if (g_vEnemies[i].GetPos().y > 350)
+				g_vEnemies[i].DoDamage(100000);
+// 			if (g_vEnemies.size())
+// 			{
+// 				g_vEnemies.erase(remove_if(g_vEnemies.begin(), g_vEnemies.end(),
+// 					not1(mem_fun_ref(&CEnemy::IsAlive))), g_vEnemies.end());
 
+			for (size_t i = 0; i < g_vEnemies.size(); i++)
+			{
+				if (!g_vEnemies[i].IsAlive())
+				{
+					g_vEnemies[i] = *g_vEnemies.rbegin();
+					g_vEnemies.pop_back();
+				}
+			}
 
-
-				//out of screen
-		if (g_vEnemies[i].GetPos().y>400)
-			g_vEnemies[i].DoDamage(100000);
-
-		if (g_vEnemies.size())
-			g_vEnemies.erase(remove_if(g_vEnemies.begin(), g_vEnemies.end(),
-			not1(mem_fun_ref(&CEnemy::IsAlive))), g_vEnemies.end());
-
-		for (size_t i = 0; i < g_vExplosions.size(); i++)
-		if (g_vExplosions[i]->IsFinished())
-		{
-			delete g_vExplosions[i];
-			g_vExplosions[i] = *g_vExplosions.rbegin();
-			g_vExplosions.pop_back();
+			//}
+			for (size_t i = 0; i < g_vExplosions.size(); i++)
+			if (g_vExplosions[i]->IsFinished())
+			{
+				delete g_vExplosions[i];
+				g_vExplosions[i] = *g_vExplosions.rbegin();
+				g_vExplosions.pop_back();
+				
+			}
 		}
 
+		g_vPlayerBullets.shrink_to_fit();
+		g_vExplosions.shrink_to_fit();
+		g_vEnemyBullets.shrink_to_fit();
+		g_vEnemies.shrink_to_fit();
+		
+
+		string score = "Score: ";
+		score += to_string(g_iPoints);
 	}
- 	string score = "Score: ";
-	score += to_string(g_iPoints);
-	g_pTest->Update(score);
-	
+
+	//of << itrt << " " << g_vEnemies.capacity()*sizeof(CEnemy)+(g_vEnemyBullets.capacity() + g_vPlayerBullets.capacity())*sizeof(CBullet) + g_vExplosions.capacity()*sizeof(CExplosion) << " " << sizeof(g_pStarField) << endl;
+
+	/*if (itrt > 1000) level = 0;*/
+
 }
 
 void CSystem::Draw()
 {
-	g_pStarField->Draw();
-	g_pPlayer->Draw();
 
-	for_each(g_vEnemies.begin(), g_vEnemies.end(),
-		mem_fun_ref(&CEnemy::Draw));
+	if (g_pFsm->GetState() == PLAY || g_pFsm->GetState() == PAUSE)
+	{
+		g_pStarField->Draw();
+		g_pPlayer->Draw();
 
-	for_each(g_vPlayerBullets.begin(), g_vPlayerBullets.end(),
-		mem_fun_ref(&CBullet::Draw));
+		for_each(g_vEnemies.begin(), g_vEnemies.end(),
+			mem_fun_ref(&CEnemy::Draw));
 
-	for_each(g_vEnemyBullets.begin(), g_vEnemyBullets.end(),
-		mem_fun_ref(&CBullet::Draw));
+		for_each(g_vPlayerBullets.begin(), g_vPlayerBullets.end(),
+			mem_fun_ref(&CBullet::Draw));
 
-	for_each(g_vExplosions.begin(), g_vExplosions.end(),
-		mem_fun(&CExplosion::Draw));
+		for_each(g_vEnemyBullets.begin(), g_vEnemyBullets.end(),
+			mem_fun_ref(&CBullet::Draw));
 
-	g_pTest->Draw();
+		for_each(g_vExplosions.begin(), g_vExplosions.end(),
+			mem_fun(&CExplosion::Draw));
+
+	}
 }
 
 void CSystem::DrawSetup()
@@ -295,11 +357,10 @@ void CSystem::DrawSetup()
 
 void CSystem::Release()
 {
-	delete g_pTest;
 	delete g_pStarField;
 	delete g_pPlayer;
 	delete g_pClock;
-	
+		
 	for (size_t i = 0; i < g_vExplosions.size(); i++)
 		delete g_vExplosions[i];
 	g_vExplosions.clear();
@@ -307,4 +368,5 @@ void CSystem::Release()
 	g_vEnemyBullets.clear();
 	g_vPlayerBullets.clear();
 	g_vEnemies.clear();
+	delete g_pFsm;
 }

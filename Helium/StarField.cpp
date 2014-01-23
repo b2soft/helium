@@ -19,9 +19,9 @@ void CStarField::Update(float fDeltaTime)
 	{
 		m_vecStars[i].m_pos.y += m_vecStars[i].m_size * fDeltaTime * 50;
 		if (m_vecStars[i].m_pos.y>300)
-		{
-			m_vecStars[i] = m_vecStars[m_vecStars.size() - 1];
-			m_vecStars.resize(m_vecStars.size() - 1);
+		{	
+			m_vecStars[i] = *m_vecStars.rbegin();
+			m_vecStars.pop_back();
 		}
 	}
 	//generating new stars if dt > .1 sec
@@ -31,6 +31,8 @@ void CStarField::Update(float fDeltaTime)
 		m_vecStars.push_back(Star(D3DXVECTOR2((rand() % 800) - 400, -300.0), (rand() % 5 + 1)));
 		m_fDT -= .1f;
 	}
+
+	m_vecStars.shrink_to_fit();
 
 }
 
