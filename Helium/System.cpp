@@ -63,7 +63,10 @@ void ProcessUserInput(float fDeltaTime)
 	
 
 	if (GetAsyncKeyState(0x51))
+	{
 		PostQuitMessage(0);
+	}
+	
 }
 
 HWND CSystem::MakeWindow(HINSTANCE hInstance)
@@ -275,9 +278,9 @@ void CSystem::Update(const float fDeltaTime)
 		score += to_string(g_iPoints);
 	}
 
-	//of << itrt << " " << g_vEnemies.capacity()*sizeof(CEnemy)+(g_vEnemyBullets.capacity() + g_vPlayerBullets.capacity())*sizeof(CBullet) + g_vExplosions.capacity()*sizeof(CExplosion) << " " << sizeof(g_pStarField) << endl;
+	of << itrt << " " << g_vEnemies.capacity()*sizeof(CEnemy)+(g_vEnemyBullets.capacity() + g_vPlayerBullets.capacity())*sizeof(CBullet) + g_vExplosions.capacity()*sizeof(CExplosion) << " " << sizeof(g_pStarField) << endl;
 
-	/*if (itrt > 1000) level = 0;*/
+	//if (itrt > 1000) level = 0;
 
 }
 

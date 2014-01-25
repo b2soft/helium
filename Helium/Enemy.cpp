@@ -14,7 +14,7 @@ fFireTimeOut(0)
 
 CEnemy::~CEnemy(void)
 {
-		
+	
 }
 
 void CEnemy::Draw()
